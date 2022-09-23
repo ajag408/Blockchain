@@ -4,7 +4,76 @@
 	},
 	"language": "Solidity",
 	"output": {
-		"abi": [],
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "_name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_favoriteNumber",
+						"type": "uint256"
+					}
+				],
+				"name": "addPerson",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "people",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "favoriteNumber",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "retrieve",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_favoriteNumber",
+						"type": "uint256"
+					}
+				],
+				"name": "store",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
 		"devdoc": {
 			"kind": "dev",
 			"methods": {},
@@ -33,11 +102,11 @@
 	},
 	"sources": {
 		"SimpleStorage/SimpleStorage.sol": {
-			"keccak256": "0xc57a73a5cc1dbc892a12b17d0edc901ed4b9e9806cd2a765a4ccebffaba0e776",
+			"keccak256": "0xd2cbfc74735751824e162eaa73b3979c59ab6ea476034e1ef35b1bbc43f457c3",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://3571b89be62929bd4f50406e4f4ceec7e2e87081bc7bcca860704b0ff17ef36c",
-				"dweb:/ipfs/Qmcrg5wU5q2nBpYkigbSkHBTXAGkr3tnbwNnRHeLP7JWcR"
+				"bzz-raw://6b6854e667637737a9ed0ef42a49a241527a130e3d5819b5946a6eb2cbe6b5ee",
+				"dweb:/ipfs/QmZFeRPKFdrKvSvG7vqZQhPvn99bzNXgo6EapLN9x1Y2xe"
 			]
 		}
 	},

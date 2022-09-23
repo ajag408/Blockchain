@@ -11,5 +11,29 @@ contract SimpleStorage {
     // bytes32 favoriteBytes = "cat"; 
 
     //initialized to 0
+    //a getter function
     uint256 favoriteNumber;
+
+
+    struct People{
+        uint256 favoriteNumber;
+        string name;
+    }
+
+    People[] public people;
+
+    function store(uint256 _favoriteNumber) public {
+        favoriteNumber = _favoriteNumber;
+    }
+
+    //view and pure don't use gas (no modification of state)
+    //pure can't read
+    function retrieve() public view returns(uint256){
+        return favoriteNumber;
+    }
+
+    function addPerson(string memory _name, uint256 _favoriteNumber) public {
+        people.push(People(_favoriteNumber, _name));
+    }
 }
+
