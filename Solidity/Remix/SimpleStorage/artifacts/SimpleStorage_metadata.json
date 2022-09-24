@@ -26,6 +26,25 @@
 			{
 				"inputs": [
 					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"name": "nameToFavoriteNumber",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
@@ -87,7 +106,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"SimpleStorage/SimpleStorage.sol": "SimpleStorage"
+			"SimpleStorage/StorageFactory.sol": "SimpleStorage"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -101,12 +120,12 @@
 		"remappings": []
 	},
 	"sources": {
-		"SimpleStorage/SimpleStorage.sol": {
-			"keccak256": "0xd2cbfc74735751824e162eaa73b3979c59ab6ea476034e1ef35b1bbc43f457c3",
+		"SimpleStorage/StorageFactory.sol": {
+			"keccak256": "0xe147ac42971c5bef6cddb8d012d4f331e64479c3b35e3c57addb8b1ecae327e1",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6b6854e667637737a9ed0ef42a49a241527a130e3d5819b5946a6eb2cbe6b5ee",
-				"dweb:/ipfs/QmZFeRPKFdrKvSvG7vqZQhPvn99bzNXgo6EapLN9x1Y2xe"
+				"bzz-raw://088b64a3968b7b346ad82771bf9602d31e185ef0dddc43f43e14c480c2be91ee",
+				"dweb:/ipfs/QmdKzVUfmEvxJ3JPuMP6Ng22nMNJkvJXsC1T6nL4GJ9grC"
 			]
 		}
 	},
