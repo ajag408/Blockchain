@@ -1,27 +1,32 @@
 const ethers = require("ethers");
 const fs = require("fs-extra");
+require("dotenv").config();
 
 async function main() {
-  //endpoint: http://127.0.0.1:7545
+  //endpoint: Goerli
   //connection to blockchain
-  const provider = new ethers.providers.JsonRpcProvider(
-    "http://127.0.0.1:7545"
-  );
+  const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
   //wallet to sign transactions
-  const wallet = new ethers.Wallet(
-    "435810c6e8552348ef4b2e8a47295532455da9ebc4f814be9550852b4454b2d4",
-    provider
-  );
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+
+  //ENCRYPTED PRIVATE KEY
+  //   const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
+  //   let wallet = new ethers.Wallet.fromEncryptedJsonSync(
+  //     encryptedJson,
+  //     process.env.PRIVATE_KEY_PASSWORD
+  //   );
+  //   wallet = await wallet.connect(provider);
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
   const binary = fs.readFileSync(
     "./SimpleStorage_sol_SimpleStorage.bin",
     "utf8"
   );
 
-  //SEND TRANSACTION WITH ETHERS
+  //DEPLOY CONTRACT WITH ETHERS
   const contractFactory = new ethers.ContractFactory(abi, binary, wallet);
   console.log("Deploying, please wait...");
   const contract = await contractFactory.deploy();
+  console.log(`Contract Adress: ${contract.address}`);
   //below, wait waits one block
   await contract.deployTransaction.wait(1);
 
@@ -32,7 +37,7 @@ async function main() {
   //   console.log("Here is the deployment receipt: ");
   //   console.log(deploymentReceipt);
 
-  //SEND TRANSACTION WITH RAW DATA
+  //DEPLOY CONTRACT WITH RAW DATA
   //   console.log("deploy w/ transaction data");
   //   const nonce = await wallet.getTransactionCount();
   //   const tx = {
