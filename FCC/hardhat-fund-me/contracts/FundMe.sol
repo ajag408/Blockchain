@@ -1,30 +1,65 @@
 // SPDX-License-Identifier: MIT
+//Pragma
 pragma solidity ^0.8.8;
 
+//Imports
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./PriceConverter.sol";
 
 //837,285 to create w/o ops
 //optimize with constant, immutable
 
-error NotOwner();
+//Error Codes
+error FundMe__NotOwner();
 
+//Interfaces, Libraries, Contracts
+
+/** @title A contract for crowd funding
+ *  @author Akash Jagannathan
+ *  @notice This contract is to demo a sample funding contract
+ *  @dev This implements price feeds as our library
+ */
 contract FundMe {
+    //Type Declarations
     using PriceConverter for uint256;
 
+    //State variables
     uint256 public constant MINIMUM_USD = 50 * 1e18;
-
     address[] public funders;
     mapping(address => uint256) public addressToAmountFunded;
-
     address public immutable i_owner;
-
     AggregatorV3Interface public priceFeed;
+
+    //Modifiers
+    modifier onlyOwner() {
+        // require(msg.sender == i_owner, "Sender is not owner!");
+        if (msg.sender != i_owner) {
+            revert FundMe__NotOwner();
+        }
+        _;
+    }
+
+    //Functions
+
+    // Functions Order:
+    //// constructor
+    //// receive
+    //// fallback
+    //// external
+    //// public
+    //// internal
+    //// private
+    //// view / pure
 
     constructor(address priceFeedAddress) {
         i_owner = msg.sender;
         priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
+    /**
+     *  @notice This function funds this contract
+     *  @dev This implements price feeds as our library
+     */
     function fund() public payable {
         require(
             msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
@@ -64,22 +99,5 @@ contract FundMe {
         require(callSuccess, "Call failed");
     }
 
-    modifier onlyOwner() {
-        // require(msg.sender == i_owner, "Sender is not owner!");
-        if (msg.sender != i_owner) {
-            revert NotOwner();
-        }
-        _;
-    }
-
     //What happens when someone sends funds to contract w/o using fund method
-
-    //receive, fund methods
-    receive() external payable {
-        fund();
-    }
-
-    fallback() external payable {
-        fund();
-    }
 }
