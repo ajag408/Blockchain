@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Alchemy, Network } from "alchemy-sdk";
 import Content from "./accountContent.component";
-import { ethers } from "ethers";
+import { formatEther } from "ethers";
 const settings = {
   apiKey: process.env.REACT_APP_ALCHEMY_API_KEY,
   network: Network.ETH_MAINNET,
@@ -36,11 +36,8 @@ export default class Account extends Component {
         alchemy.core
           .getBalance(search)
           .then((res) => {
-            console.log("hello");
-            console.log("res: ", Number(res));
-            console.log("ethVal: ", ethers.formatEther(Number(res)));
             this.setState({
-              balance: Number(res),
+              balance: formatEther(res.toString()),
             });
           })
           .catch((error) => {

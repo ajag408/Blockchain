@@ -75,7 +75,7 @@ function Content(props) {
           <br />
 
           <div className={classes.content}>
-            <b>Balance: {balance}</b>
+            <b>Balance: {balance} Eth</b>
           </div>
         </div>
       </div>
