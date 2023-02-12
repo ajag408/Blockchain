@@ -21,34 +21,11 @@ export default class Home extends Component {
     // Setting up state
     this.state = {
       blocknumber: null,
-      blockinfo: {},
-      transactions: [],
-      receipt: {},
     };
 
     alchemy.core.getBlockNumber().then((res) => {
       this.setState({
         blocknumber: res,
-      });
-
-      alchemy.core.getBlockWithTransactions(res).then((res2) => {
-        // console.log(res2.transactions);
-        this.setState(
-          {
-            blockinfo: res2,
-            transactions: res2.transactions.slice(0, 10),
-          },
-          () => {
-            alchemy.core
-              .getTransactionReceipt(res2.transactions[0].hash)
-              .then((res3) => {
-                console.log("res33", res3);
-                this.setState({
-                  receipt: res3,
-                });
-              });
-          }
-        );
       });
     });
   }

@@ -1,12 +1,18 @@
 import React from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
-import Home from "./home.component";
+import Home from "./home/home.component";
+import Block from "./block/block.component";
+import Transaction from "./transaction/transaction.component";
+import Account from "./account/account.component";
 
 const Main = () => (
   <BrowserRouter>
     <Switch>
       <Route exact path="/" component={Home} />
+      <Route exact path="/block/:blockid" component={Block} />
+      <Route exact path="/transaction/:transactionid" component={Transaction} />
+      <Route exact path="/account" component={Account} />
       {/* <Route exact path="/signup-student" component={CreateStudent} />
     <Route exact path="/signup-company" component={CreateCompany} />
     <Route exact path="/company-signin" component={CompanySignin} />

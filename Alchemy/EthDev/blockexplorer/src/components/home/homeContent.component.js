@@ -55,38 +55,17 @@ const styles = (theme) => ({
 
 function Content(props) {
   const { classes, state } = props;
-  const { blocknumber, blockinfo, transactions, receipt } = state;
+  const { blocknumber } = state;
 
   return (
     <div>
-      <div className={classes.root}>Block Number: {blocknumber}</div>
-
-      <br></br>
-
-      <div>
-        <b>Blockinfo</b>
-
-        <p>hash: {blockinfo.hash}</p>
-      </div>
-
-      <br></br>
-      <br></br>
-
-      <div>
-        <b>Transactions:</b>
-        {/* {state.transactions.length} */}
-        {state.transactions.map((transaction, i) => (
-          <p>{transaction.hash}</p>
-        ))}
+      <div className={classes.root}>
+        Block Number: <a href={`/block/${blocknumber}`}>{blocknumber}</a>
       </div>
       <br></br>
       <br></br>
-      <div>
-        <b>Transaction Info for {receipt.transactionHash}</b>
 
-        <p>from: {receipt.from}</p>
-        <p>to: {receipt.to}</p>
-      </div>
+      <a href={`/account`}>Lookup an account balance</a>
     </div>
   );
 }
