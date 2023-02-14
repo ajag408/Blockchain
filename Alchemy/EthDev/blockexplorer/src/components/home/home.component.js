@@ -24,6 +24,8 @@ export default class Home extends Component {
 
     this.onChangeFloorAddress = this.onChangeFloorAddress.bind(this);
     this.onSubmitFloor = this.onSubmitFloor.bind(this);
+    this.onChangeTransferAddress = this.onChangeTransferAddress.bind(this);
+    this.onSubmitTransfers = this.onSubmitTransfers.bind(this);
 
     // Setting up state
     this.state = {
@@ -31,6 +33,7 @@ export default class Home extends Component {
       contractAddress: "",
       tokenID: "",
       floorAddress: "",
+      toAddress: "",
     };
 
     alchemy.core.getBlockNumber().then((res) => {
@@ -50,6 +53,10 @@ export default class Home extends Component {
 
   onChangeFloorAddress(e) {
     this.setState({ floorAddress: e.target.value });
+  }
+
+  onChangeTransferAddress(e) {
+    this.setState({ toAddress: e.target.value });
   }
 
   onSubmitMeta(e) {
@@ -80,6 +87,30 @@ export default class Home extends Component {
     alchemy.nft.getFloorPrice(floorAddress).then(console.log);
   }
 
+  onSubmitTransfers(e) {
+    e.preventDefault();
+    const { toAddress } = this.state;
+    alchemy.core
+      .getAssetTransfers({
+        toAddress: toAddress,
+        withMetadata: true,
+        category: ["external"],
+      })
+      .then((res) => {
+        // console.log("res: ", res);
+        var transfers = res["transfers"];
+        // console.log("t type: ", typeof transfers);
+        var filteredTransfers = transfers.filter(function (t) {
+          return (
+            new Date(t["metadata"]["blockTimestamp"]).getFullYear() ==
+            new Date().getFullYear()
+          );
+        });
+
+        console.log("Transfers to this address this year: ", filteredTransfers);
+      });
+  }
+
   render() {
     return (
       <div>
@@ -88,7 +119,9 @@ export default class Home extends Component {
           onSubmitFloor={this.onSubmitFloor}
           onChangeContractAddress={this.onChangeContractAddress}
           onChangeFloorAddress={this.onChangeFloorAddress}
+          onChangeTransferAddress={this.onChangeTransferAddress}
           onChangeTokenID={this.onChangeTokenID}
+          onSubmitTransfers={this.onSubmitTransfers}
           state={this.state}
         />
       </div>

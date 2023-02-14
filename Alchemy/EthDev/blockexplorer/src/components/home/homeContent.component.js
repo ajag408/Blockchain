@@ -68,8 +68,11 @@ function Content(props) {
     onChangeTokenID,
     onChangeFloorAddress,
     onSubmitFloor,
+    onChangeTransferAddress,
+    onSubmitTransfers,
   } = props;
-  const { blocknumber, contractAddress, tokenID, floorAddress } = state;
+  const { blocknumber, contractAddress, tokenID, floorAddress, toAddress } =
+    state;
 
   return (
     <div>
@@ -141,6 +144,28 @@ function Content(props) {
           <br></br>
         </div>
       </div>
+
+      <div>
+        <div className="form-wrapper">
+          <h1>2023 Transfers</h1>
+          <Form onSubmit={onSubmitTransfers}>
+            <Form.Group controlId="toAddress">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                required
+                type="text"
+                value={toAddress}
+                onChange={onChangeTransferAddress}
+              />
+            </Form.Group>
+            <Button variant="danger" size="lg" block="block" type="submit">
+              Look Up
+            </Button>
+          </Form>
+
+          <br></br>
+        </div>
+      </div>
     </div>
   );
 }
@@ -153,6 +178,8 @@ Content.propTypes = {
   onChangeContractAddress: PropTypes.node.isRequired,
   onChangeTokenID: PropTypes.node.isRequired,
   onChangeFloorAddress: PropTypes.node.isRequired,
+  onChangeTransferAddress: PropTypes.node.isRequired,
+  onSubmitTransfers: PropTypes.node.isRequired,
 };
 
 export default withStyles(styles)(Content);
