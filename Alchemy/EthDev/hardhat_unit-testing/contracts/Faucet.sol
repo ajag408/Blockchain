@@ -28,4 +28,6 @@ contract Faucet {
         require(msg.sender == owner);
         _;
     }
+
+    receive() external payable {}
 }
