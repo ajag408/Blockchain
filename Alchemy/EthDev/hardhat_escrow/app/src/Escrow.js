@@ -18,7 +18,7 @@ export default function Escrow({
         </li>
         <li>
           <div> Value </div>
-          <div> {value} </div>
+          <div> {value} Eth</div>
         </li>
         <div
           className="button"
