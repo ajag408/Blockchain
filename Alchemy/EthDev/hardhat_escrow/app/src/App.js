@@ -2,24 +2,27 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import deploy from "./deploy";
 import Escrow from "./Escrow";
-
-// const provider = new ethers.providers.JsonRpcProvider(
-//   process.env.REACT_APP_SEPOLIA_URL
-// );
+import { Alchemy, Network } from "alchemy-sdk";
+import EscrowContract from "./artifacts/contracts/Escrow.sol/Escrow.json";
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-let privateKey = process.env.REACT_APP_PRIVATE_KEY;
+const config = {
+  apiKey: process.env.REACT_APP_SEPOLIA_API_KEY,
+  network: Network.ETH_SEPOLIA,
+};
 
-let arbKey = process.env.REACT_APP_ARBITER;
-
-let myWallet = new ethers.Wallet(privateKey, provider);
-
-let myArbiter = new ethers.Wallet(arbKey, provider);
+const alchemy = new Alchemy(config);
 
 export async function approve(escrowContract, signer) {
-  const approveTxn = await escrowContract.connect(signer).approve();
-  await approveTxn.wait();
+  try {
+    const approveTxn = await escrowContract.connect(signer).approve();
+    alert("Approval in process");
+    await approveTxn.wait();
+  } catch (e) {
+    console.log(e);
+    alert("Make sure you are currently connected with arbiter's wallet");
+  }
 }
 
 function App() {
@@ -28,13 +31,100 @@ function App() {
   const [signer, setSigner] = useState();
 
   useEffect(() => {
+    //connect up provider and get currently deployed escrow contract instances by a specified address
     async function getAccounts() {
-      setWallet(myWallet);
-      setSigner(myArbiter);
+      const accounts = await provider.send("eth_requestAccounts", []);
+      // console.log("accounts: ", accounts);
 
-      // const accounts = await provider.send("eth_requestAccounts", []);
-      // setWallet(accounts[0]);
-      // setSigner(provider.getSigner());
+      setWallet(accounts[0]);
+      setSigner(provider.getSigner());
+
+      var currentEscrows = [];
+
+      const transfers = [];
+
+      // Paginate through the results using getAssetTransfers method
+      let response = await alchemy.core.getAssetTransfers({
+        fromBlock: "0x0",
+        toBlock: "latest", // Fetch results up to the latest block
+        fromAddress: "0x765077Bbd9a94A9294E475d8CB22A92274992C93", // Filter results to only include transfers from the specified address
+        excludeZeroValue: false, // Include transfers with a value of 0
+        category: ["external"], // Filter results to only include external transfers
+      });
+      transfers.push(...response.transfers);
+
+      // Continue fetching and aggregating results while there are more pages
+      while (response.pageKey) {
+        let pageKey = response.pageKey;
+        response = await alchemy.core.getAssetTransfers({
+          fromBlock: "0x0",
+          toBlock: "latest",
+          fromAddress: "0x765077Bbd9a94A9294E475d8CB22A92274992C93",
+          excludeZeroValue: false,
+          category: ["external"],
+          pageKey: pageKey,
+        });
+        transfers.push(...response.transfers);
+      }
+
+      // Filter the transfers to only include contract deployments (where 'to' is null)
+      const deployments = transfers.filter((transfer) => transfer.to === null);
+      const txHashes = deployments.map((deployment) => deployment.hash);
+
+      // Fetch the transaction receipts for each of the deployment transactions
+      const promises = txHashes.map((hash) =>
+        alchemy.core.getTransactionReceipt(hash)
+      );
+
+      // Wait for all the transaction receipts to be fetched
+      const receipts = await Promise.all(promises);
+      const contractAddresses = receipts.map(
+        (receipt) => receipt?.contractAddress
+      );
+
+      //connect to already deployed contracts
+      for (var i = 0; i < contractAddresses.length; i++) {
+        const this_contract = new ethers.Contract(
+          contractAddresses[i],
+          EscrowContract.abi,
+          provider
+        );
+
+        const arbiter = await this_contract.arbiter();
+        const beneficiary = await this_contract.beneficiary();
+        const balance = await provider.getBalance(contractAddresses[i]);
+
+        let approved = await this_contract.isApproved();
+
+        // if (approved) {
+        //   approved = "True";
+        // } else {
+        //   approved = "False";
+        // }
+
+        const escrow = {
+          address: contractAddresses[i],
+          arbiter,
+          beneficiary,
+          value: ethers.utils.formatEther(balance).toString(),
+          approved,
+          handleApprove: async () => {
+            this_contract.on("Approved", () => {
+              document.getElementById(this_contract.address).className =
+                "complete";
+              document.getElementById(this_contract.address).innerText =
+                "✓ It's been approved!";
+            });
+
+            await approve(this_contract, signer);
+          },
+        };
+
+        console.log("approved?: ", escrow.approved);
+
+        currentEscrows.push(escrow);
+      }
+      setEscrows(currentEscrows);
     }
 
     getAccounts();
@@ -51,7 +141,7 @@ function App() {
       );
       //catch arbiter and beneficiary address errors
       try {
-        var escrowContract = await deploy(wallet, arbiter, beneficiary, value);
+        var escrowContract = await deploy(signer, arbiter, beneficiary, value);
         alert("Escrow deployment in progress");
 
         await escrowContract.deployed();
@@ -61,8 +151,8 @@ function App() {
           arbiter,
           beneficiary,
           value: ethers.utils.formatEther(value).toString(),
+          approved: false,
           handleApprove: async () => {
-            alert("Approval in process");
             escrowContract.on("Approved", () => {
               document.getElementById(escrowContract.address).className =
                 "complete";
