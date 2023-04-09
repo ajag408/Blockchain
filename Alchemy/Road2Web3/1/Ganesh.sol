@@ -11,19 +11,22 @@ contract Ganesh is ERC721, ERC721Enumerable, ERC721URIStorage {
 
     Counters.Counter private _tokenIdCounter;
 
-    uint256 MAX_SUPPLY = 10000;
+    uint256 MAX_SUPPLY = 5;
 
-    constructor() ERC721("Ganesh", "GSH") {}
+    mapping(address => uint256) public nftsMinted;
+
+    constructor() ERC721("Ganesh", "GSH8") {}
 
     function safeMint(address to, string memory uri) public {
         require(
-            _tokenIdCounter.current() <= MAX_SUPPLY,
-            "I'm sorry, we reached cap"
+            nftsMinted[to] < MAX_SUPPLY,
+            "I'm sorry, you can mint a max of 5 NFTs"
         );
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+        nftsMinted[to] += 1;
     }
 
     // The following functions are overrides required by Solidity.

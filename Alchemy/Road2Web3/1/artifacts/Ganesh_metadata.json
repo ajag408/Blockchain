@@ -181,6 +181,25 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "nftsMinted",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
@@ -598,11 +617,11 @@
 			]
 		},
 		"Ganesh.sol": {
-			"keccak256": "0x99954918e3faecb77aa4693b5b43d5f6be1e83dcfe33e6c12b98c9f78a3baecf",
+			"keccak256": "0xc96b6c123af9e7ad1828e7fba5a3154f430d967dfba23b572ad1a90fa6a7a596",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6f69491edb865deea3a97b7078289624b57b97fc71f5b0d72c7d122792ed4751",
-				"dweb:/ipfs/QmbHvsdVvm7BcZ5sdqRjWtGCJC9r15zYo6hgbrSBGXdeis"
+				"bzz-raw://c35766b2953d76d46a8d9557939fdd0b506de919ee2f7c2f97fdc8dd8d2fc601",
+				"dweb:/ipfs/QmQw6DjsixjrWrtrraH4WcHfnj7pVJAfBxTDPrJRV9so8B"
 			]
 		}
 	},

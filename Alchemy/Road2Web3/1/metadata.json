@@ -1,0 +1,19 @@
+{ 
+  "description": "This NFT proves I've created and deployed my first ERC20 smart contract on Goerli with Alchemy Road to Web3",
+  "external_url": "Alchemy.com/?a=roadtoweb3weekone",
+  "image": "https://ipfs.filebase.io/ipfs/QmVi9ViyMTMKJ5GhW7JG862Pp1h4bVQg1iZpf5hqo56TDo",
+  "name": "Ganesh", 
+  "attributes": [
+    {
+      "trait_type": "Color", 
+      "value": "White"
+    }, 
+    {
+      "trait_type": "Turban", 
+      "value": "Red"
+    }, 
+    {
+       "trait_type": "Submerged", 
+       "value": true
+    }]
+  }
