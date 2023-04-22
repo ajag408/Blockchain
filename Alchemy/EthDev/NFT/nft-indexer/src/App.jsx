@@ -36,19 +36,50 @@ function App() {
       // console.log("data: ", data);
       setResults(data);
 
-      const tokenDataPromises = [];
+
+      //old way with serial metadata requests
+
+        // const tokenDataPromises = [];
+
+        // for (let i = 0; i < data.ownedNfts.length; i++) {
+        //   const tokenData = alchemy.nft.getNftMetadata(
+        //     data.ownedNfts[i].contract.address,
+        //     data.ownedNfts[i].tokenId
+        //   );
+        //   tokenDataPromises.push(tokenData);
+        // }
+
+          // // console.log("tokenDataObjects: ", tokenDataObjects.length)
+          // await Promise.all(tokenDataPromises).then((values) => {
+          //   setTokenDataObjects(values);
+          //   // console.log("WWWWWTTTTTTTFFFFFF")
+          //   // for(var i = 0; i<values.length; i++){
+          //   //   console.log('name: ', values[i].title)
+          //   //   console.log('raw meta: ', values[i].rawMetadata)
+          //   // }
+          //   setIsLoading(false);
+          //   setHasQueried(true);
+          // });
+
+      const tokens = [];
 
       for (let i = 0; i < data.ownedNfts.length; i++) {
-        const tokenData = alchemy.nft.getNftMetadata(
-          data.ownedNfts[i].contract.address,
-          data.ownedNfts[i].tokenId
-        );
-        tokenDataPromises.push(tokenData);
+        const tokenData = {
+          contractAddress: data.ownedNfts[i].contract.address,
+          tokenId: data.ownedNfts[i].tokenId
+        };
+        tokens.push(tokenData);
       }
 
-      setTokenDataObjects(await Promise.all(tokenDataPromises));
+      let nfts = await alchemy.nft.getNftMetadataBatch(tokens);
+
+      setTokenDataObjects(nfts);
       setIsLoading(false);
       setHasQueried(true);
+
+
+
+
     } catch(e){
       alert("Address invalid!");
       setUserAddress("")
@@ -156,10 +187,11 @@ function App() {
                   </Box>
                   <Image
                     src={
-                      tokenDataObjects[i]?.rawMetadata?.image ??
+                      tokenDataObjects[i].rawMetadata?.image ??
                       'https://via.placeholder.com/200'
                     }
-                    alt={'Image'}
+                    fallbackSrc = 'https://via.placeholder.com/200'
+                    alt={'No Image'}
                   />
                 </Flex>
               );
