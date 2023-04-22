@@ -8,39 +8,72 @@ import {
   Input,
   SimpleGrid,
   Text,
+  Spinner,
 } from '@chakra-ui/react';
 import { Alchemy, Network } from 'alchemy-sdk';
 import { useState } from 'react';
 
 function App() {
   const [userAddress, setUserAddress] = useState('');
+  const [walletConnected, setWalletConnected] = useState(false);
   const [results, setResults] = useState([]);
   const [hasQueried, setHasQueried] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [tokenDataObjects, setTokenDataObjects] = useState([]);
 
   async function getNFTsForOwner() {
+    setIsLoading(true);
+    setHasQueried(false);
     const config = {
       apiKey: import.meta.env.REACT_APP_ETH_API,
       network: Network.ETH_MAINNET,
     };
 
     const alchemy = new Alchemy(config);
-    const data = await alchemy.nft.getNftsForOwner(userAddress);
-    setResults(data);
 
-    const tokenDataPromises = [];
+    try{
+      const data = await alchemy.nft.getNftsForOwner(userAddress);
+      // console.log("data: ", data);
+      setResults(data);
 
-    for (let i = 0; i < data.ownedNfts.length; i++) {
-      const tokenData = alchemy.nft.getNftMetadata(
-        data.ownedNfts[i].contract.address,
-        data.ownedNfts[i].tokenId
-      );
-      tokenDataPromises.push(tokenData);
+      const tokenDataPromises = [];
+
+      for (let i = 0; i < data.ownedNfts.length; i++) {
+        const tokenData = alchemy.nft.getNftMetadata(
+          data.ownedNfts[i].contract.address,
+          data.ownedNfts[i].tokenId
+        );
+        tokenDataPromises.push(tokenData);
+      }
+
+      setTokenDataObjects(await Promise.all(tokenDataPromises));
+      setIsLoading(false);
+      setHasQueried(true);
+    } catch(e){
+      alert("Address invalid!");
+      setUserAddress("")
     }
-
-    setTokenDataObjects(await Promise.all(tokenDataPromises));
-    setHasQueried(true);
   }
+
+  async function connectWallet() {
+    if(window.ethereum) {
+      console.log('detected');
+
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        setUserAddress(accounts[0]);
+        setWalletConnected(true);
+      } catch (error) {
+        console.log('Error connecting...');
+      }
+
+    } else {
+      alert('Wallet extension not detected');
+    }
+  }
+
   return (
     <Box w="100vw">
       <Center>
@@ -65,7 +98,7 @@ function App() {
       >
         <Heading mt={42}>Get all the ERC-721 tokens of this address:</Heading>
         <Input
-          onChange={(e) => setUserAddress(e.target.value)}
+          onChange={(e) => {setUserAddress(e.target.value); setWalletConnected(false)}}
           color="black"
           w="600px"
           textAlign="center"
@@ -73,11 +106,36 @@ function App() {
           bgColor="white"
           fontSize={24}
         />
+
+        <Heading mt={42}>
+          Or
+        </Heading>
+
+        {walletConnected ? 
+          (
+            <>
+            <Button fontSize={20} mt={36} bgColor="green">
+                  Connected with {userAddress}
+              </Button>
+              <Button fontSize={20} onClick = {() => {setWalletConnected(false)}} mt={36} bgColor="red">
+                Disconnect Wallet
+              </Button>
+            </>
+          ) 
+        : (  <Button fontSize={20} onClick = {connectWallet} mt={36} bgColor="blue">
+              Connect Wallet
+            </Button>) 
+        }
+
         <Button fontSize={20} onClick={getNFTsForOwner} mt={36} bgColor="blue">
           Fetch NFTs
         </Button>
 
         <Heading my={36}>Here are your NFTs:</Heading>
+
+        {isLoading ? (
+         <Spinner />
+        ) : ("")}
 
         {hasQueried ? (
           <SimpleGrid w={'90vw'} columns={4} spacing={24}>
@@ -108,7 +166,7 @@ function App() {
             })}
           </SimpleGrid>
         ) : (
-          'Please make a query! The query may take a few seconds...'
+          ''
         )}
       </Flex>
     </Box>
