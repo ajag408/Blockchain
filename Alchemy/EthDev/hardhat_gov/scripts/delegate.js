@@ -1,14 +1,15 @@
 const tokenAddr = "0xdA87E876B7eE28291C4E2E1b8Fed04CCA0686379";
 
 async function main() {
-  // attach to the deployed gov token
-  const token = await hre.ethers.getContractAt("MyToken", tokenAddr);
-
   const url = process.env.ALCHEMY_SEPOLIA_URL;
   let privateKey = process.env.SEPOLIA_PRIVATE_KEY;
   const provider = new ethers.providers.JsonRpcProvider(url);
   let owner = new ethers.Wallet(privateKey, provider);
-  //Ganesh's initial balance of RJ tokens
+
+  // attach to the deployed gov token
+  const token = await hre.ethers.getContractAt("MyToken", tokenAddr);
+
+  //Balance of gov tokens before delegation
   const myBeforeBalance = await token.balanceOf(owner.address);
   const beforeBalance = ethers.utils.formatEther(myBeforeBalance);
 

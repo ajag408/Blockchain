@@ -2,17 +2,14 @@
 const govAddr = "0x049CF58FF52f35194F2bBE4542426a7f165A4931";
 
 async function main() {
+  //Proposal ID copied and hard-coded from previous step (propose.js)
   const proposalId = ethers.BigNumber.from(
-    "55464478978233079024076953986344115705055625782618195002781782344501279211817"
+    "112971628834365023942085812478994004190187251562864606094129845688154543022676"
   );
-
-  //   const url = process.env.ALCHEMY_SEPOLIA_URL;
-  //   let privateKey = process.env.SEPOLIA_PRIVATE_KEY;
-  //   const provider = new ethers.providers.JsonRpcProvider(url);
-  //   let owner = new ethers.Wallet(privateKey, provider);
 
   const governor = await hre.ethers.getContractAt("MyGovernor", govAddr);
 
+  //state needs to be 1 (Pending)
   const state = await governor.state(proposalId);
   console.log("State of newly created proposal: ", state);
 
