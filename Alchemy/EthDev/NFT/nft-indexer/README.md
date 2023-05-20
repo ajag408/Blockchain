@@ -1,5 +1,7 @@
 # NFT Indexer
 
+![Example](example.jpeg)
+
 This app displays all the NFTs owned by a specified address on the Ethereum Mainnet
 
 - Built using React.js + Vite to serve the app with faster development times and better performance than standalone React apps
@@ -9,7 +11,6 @@ This app displays all the NFTs owned by a specified address on the Ethereum Main
 * Error checks for invalid addresses
 * ENS support for address inputs
 
-![Example](example.jpeg)
 
 ## To Run
 
