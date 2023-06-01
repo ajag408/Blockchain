@@ -1,6 +1,6 @@
 # NFT Indexer
 
-![Example](example.jpeg)
+![Example](example.jpg)
 
 This app displays all the NFTs owned by a specified address on the Ethereum Mainnet
 
