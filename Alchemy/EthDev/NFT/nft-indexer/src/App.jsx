@@ -153,12 +153,12 @@ function App() {
               </Button>
             </>
           ) 
-        : (  <Button fontSize={20} onClick = {connectWallet} mt={36} bgColor="blue">
+        : (  <Button fontSize={20} onClick = {connectWallet} mt={36} bgColor="blue" color="white" fontWeight="bold">
               Connect Wallet
             </Button>) 
         }
 
-        <Button fontSize={20} onClick={getNFTsForOwner} mt={36} bgColor="blue">
+        <Button fontSize={20} onClick={getNFTsForOwner} mt={36} bgColor="blue" color="white" fontWeight="bold">
           Fetch NFTs
         </Button>
 
