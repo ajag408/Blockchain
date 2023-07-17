@@ -43,6 +43,7 @@ function Board({ xIsNext, squares, onPlay }) {
                 let i = 3 * row + col;
                 return (
                   <Square
+                    key={i}
                     value={squares[i]}
                     onSquareClick={() => handleClick(i)}
                   />
@@ -59,6 +60,7 @@ function Board({ xIsNext, squares, onPlay }) {
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [movesAscending, setMovesAscending] = useState(false);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
@@ -72,7 +74,7 @@ export default function Game() {
     setCurrentMove(nextMove);
   }
 
-  const moves = history.map((squares, move) => {
+  var moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
       description = "Go to move #" + move;
@@ -90,13 +92,18 @@ export default function Game() {
     );
   });
 
+  function toggleOrder() {
+    setMovesAscending(!movesAscending);
+  }
+
   return (
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <ol>{moves}</ol>
+        <button onClick={() => toggleOrder()}>Toggle Order</button>
+        <ol>{movesAscending ? moves.reverse() : moves}</ol>
       </div>
     </div>
   );
