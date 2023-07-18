@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 
-function Square({ value, onSquareClick }) {
+function Square({ value, onSquareClick, winning }) {
   return (
-    <button className="square" onClick={onSquareClick}>
+    <button
+      className={winning ? "squarewin" : "square"}
+      onClick={onSquareClick}
+    >
       {value}
     </button>
   );
@@ -12,7 +15,7 @@ function Board({ xIsNext, squares, onPlay }) {
   let board = [];
 
   function handleClick(i) {
-    if (calculateWinner(squares) || squares[i]) {
+    if (calculateWinner(squares)[0] || squares[i]) {
       return;
     }
     const nextSquares = squares.slice();
@@ -24,12 +27,23 @@ function Board({ xIsNext, squares, onPlay }) {
     onPlay(nextSquares);
   }
 
-  const winner = calculateWinner(squares);
+  const [winner, winLine] = calculateWinner(squares);
   let status;
   if (winner) {
     status = "Winner: " + winner;
   } else {
-    status = "Next player: " + (xIsNext ? "X" : "O");
+    let notDraw;
+    for (var i = 0; i < squares.length; i++) {
+      if (squares[i] == null) {
+        notDraw = true;
+        break;
+      }
+    }
+    if (notDraw) {
+      status = "Next player: " + (xIsNext ? "X" : "O");
+    } else {
+      status = "Match Drawn";
+    }
   }
 
   return (
@@ -44,6 +58,7 @@ function Board({ xIsNext, squares, onPlay }) {
                 return (
                   <Square
                     key={i}
+                    winning={winLine.includes(i) ? true : false}
                     value={squares[i]}
                     onSquareClick={() => handleClick(i)}
                   />
@@ -67,6 +82,8 @@ export default function Game() {
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
+    // console.log("history: ", nextHistory);
+    // console.log("nextSquares: ", nextSquares);
     setCurrentMove(nextHistory.length - 1);
   }
 
@@ -76,8 +93,20 @@ export default function Game() {
 
   var moves = history.map((squares, move) => {
     let description;
+    let changed;
     if (move > 0) {
-      description = "Go to move #" + move;
+      for (var i = 0; i < 9; i++) {
+        if (squares[i] != history[move - 1][i]) {
+          if (i < 3) {
+            changed = [0, i];
+          } else if (i >= 3 && i < 6) {
+            changed = [1, i - 3];
+          } else {
+            changed = [2, i - 6];
+          }
+        }
+      }
+      description = "Go to move #" + move + " (" + changed + ")";
     } else {
       description = "Go to game start";
     }
@@ -123,8 +152,8 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return [squares[a], lines[i]];
     }
   }
-  return null;
+  return [null, []];
 }
