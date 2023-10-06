@@ -10,7 +10,7 @@ async function getBalance(provider, address) {
 
 async function main() {
   // Get the contract that has been deployed to Goerli.
-  const contractAddress = "0xffAf2409E7abE5F3E9EE7c4C3BF78B4385Eec6Bf";
+  const contractAddress = "0xDA38D2B87b91b766765f2BDa6A038a895bd4e50b";
   const contractABI = abi.abi;
 
   // Get the node connection and wallet connection.
@@ -20,6 +20,8 @@ async function main() {
   // or else this script will fail with an error.
   const signer = new hre.ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
+  const signer2 = new hre.ethers.Wallet(process.env.PRIVATE_KEY2, provider);
+
   // Instantiate connected contract.
   const buyMeACoffee = new hre.ethers.Contract(
     contractAddress,
@@ -27,35 +29,17 @@ async function main() {
     signer
   );
 
-  // Check starting balances.
-  const bmcAdd = buyMeACoffee.getAddress();
-  console.log(
-    "current balance of owner: ",
-    await getBalance(provider, signer.getAddress()),
-    "ETH"
-  );
-  const contractBalance = await getBalance(provider, bmcAdd);
-  console.log(
-    "current balance of contract: ",
-    await getBalance(provider, bmcAdd),
-    "ETH"
-  );
+  const initBen = await buyMeACoffee.getBen();
+  console.log("initial owner: ", initBen);
 
-  // Withdraw funds if there are funds to withdraw.
-  if (contractBalance !== "0.0") {
-    console.log("withdrawing funds..");
-    const withdrawTxn = await buyMeACoffee.withdrawTips();
-    await withdrawTxn.wait();
-  } else {
-    console.log("no funds to withdraw!");
-  }
+  //   console.log(await signer.getAddress());
+  const newOwner = await signer2.getAddress();
+  console.log("should change to: ", newOwner);
+  const updateOwner = await buyMeACoffee.updateBen(newOwner);
+  await updateOwner.wait();
 
-  // Check ending balance.
-  console.log(
-    "current balance of owner: ",
-    await getBalance(provider, signer.address),
-    "ETH"
-  );
+  const newBen = await buyMeACoffee.getBen();
+  console.log("new owner: ", newBen);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

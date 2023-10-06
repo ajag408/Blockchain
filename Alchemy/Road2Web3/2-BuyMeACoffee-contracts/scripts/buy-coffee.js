@@ -22,15 +22,16 @@ async function printMemos(memos) {
     const tipper = memo.name;
     const tipperAddress = memo.from;
     const message = memo.message;
+    const size = memo.size;
     console.log(
-      `At ${timestamp}, ${tipper} (${tipperAddress}) said: "${message}"`
+      `At ${timestamp}, ${tipper} (${tipperAddress}) bought a ${size} coffee and said: "${message}"`
     );
   }
 }
 
 async function main() {
   // Get the example accounts we'll be working with.
-  const [owner, tipper, tipper2, tipper3] = await hre.ethers.getSigners();
+  const [owner, tipper, tipper2, tipper3] = await ethers.getSigners();
 
   // We get the contract to deploy.
   const BuyMeACoffee = await hre.ethers.getContractFactory("BuyMeACoffee");
@@ -39,13 +40,13 @@ async function main() {
   // Deploy the contract.
   // console.log("buyMeACoffee: ", buyMeACoffee);
   await buyMeACoffee.waitForDeployment();
-  console.log("BuyMeACoffee deployed to:", await buyMeACoffee.getAddress());
+  console.log("BuyMeACoffee deployed to:", buyMeACoffee.getAddress());
 
   // Check balances before the coffee purchase.
   const addresses = [
-    await owner.getAddress(),
-    await tipper.getAddress(),
-    await buyMeACoffee.getAddress(),
+    owner.getAddress(),
+    tipper.getAddress(),
+    buyMeACoffee.getAddress(),
   ];
   console.log("== start ==");
   await printBalances(addresses);
@@ -60,7 +61,7 @@ async function main() {
     .buyCoffee("Vitto", "Amazing teacher", tip);
   await buyMeACoffee
     .connect(tipper3)
-    .buyCoffee("Kay", "I love my Proof of Knowledge", tip);
+    .buyLargeCoffee("Kay", "I love my Proof of Knowledge", tip);
 
   // Check balances after the coffee purchase.
   console.log("== bought coffee ==");
@@ -77,6 +78,27 @@ async function main() {
   console.log("== memos ==");
   const memos = await buyMeACoffee.getMemos();
   printMemos(memos);
+
+  //test update owner
+
+  //   // Buy the owner a few coffees.
+  //   const tip2 = { value: hre.ethers.parseEther("1") };
+  //   await buyMeACoffee.connect(tipper).buyCoffee("JAK", "GEEKED", tip2);
+  //   await buyMeACoffee.connect(tipper2).buyCoffee("JAK", "GEEKING", tip2);
+  //   await buyMeACoffee.connect(tipper3).buyCoffee("JAK", "TWEAKIN", tip2);
+
+  //   // Check balances after the coffee purchase.
+  //   console.log("== bought coffee ==");
+  //   await printBalances(addresses);
+
+  //   // Withdraw.
+  //   await buyMeACoffee.connect(owner).updateBen(tipper);
+  //   await buyMeACoffee.connect(owner).withdrawTips();
+  //   await buyMeACoffee.connect(tipper).withdrawTips();
+
+  //   // Check balances after withdrawal.
+  //   console.log("== withdrawTips ==");
+  //   await printBalances(addresses);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
