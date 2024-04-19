@@ -11,7 +11,11 @@ export const NFTCard = ({ nft }) => {
             <div className="">
                 <h2 className="text-xl text-gray-800">{nft.title}</h2>
                 <p className="text-gray-600">Id: {nft.id.tokenId}</p>
-                <p className="text-gray-600" >{nft.contract.address}</p>
+                <p className="text-gray-600" ><button 
+  onClick={() =>  navigator.clipboard.writeText(nft.contract.address)}
+>
+  Copy
+</button>{nft.contract.address}</p>
             </div>
 
             <div className="flex-grow mt-2">
