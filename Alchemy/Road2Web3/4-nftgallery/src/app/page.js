@@ -1,22 +1,23 @@
 "use client";
 
 import { NFTCard } from "../../components/nftCard";
-import { useState } from "react";
+import { Pagination } from "../../components/Pagination";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [wallet, setWalletAddress] = useState("");
   const [collection, setCollectionAddress] = useState("");
   const [NFTs, setNFTs] = useState([]);
+  const [currentRecords, setCurrentRecords] = useState([]);
   const [fetchForCollection, setFetchForCollection] = useState(false);
 
-  const [data, setData] = useState([]); // Initialize 'data' state with an empty array []
-  const [loading, setLoading] = useState(true); // Initialize 'loading' state with the value 'true', indicating that data is still loading
   // User is currently on this page
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(100);
+  const [nPages, setNPages] = useState(1);
 
   const fetchNFTs = async () => {
-    let nfts;
+    var nfts;
     console.log("fetching nfts");
     const api_key = "YtUZdfx9w_1z7f1pIvQSP3KKbQr5rETI";
     const baseURL = `https://eth-mainnet.g.alchemy.com/v2/${api_key}/getNFTs/`;
@@ -28,15 +29,58 @@ export default function Home() {
       const fetchURL = `${baseURL}?owner=${wallet}`;
 
       nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
+      // console.log("data: ", nfts.totalCount);
+      if (nfts.totalCount > 100) {
+        var totalPages = Math.ceil(nfts.totalCount / 100);
+        var pageKey = nfts.pageKey;
+        for (var i = 0; i < totalPages - 1; i++) {
+          var thisFetchURL = `${baseURL}?owner=${wallet}&pageKey=${pageKey}`;
+          var new_nfts = await fetch(thisFetchURL, requestOptions).then(
+            (data) => data.json()
+          );
+          // console.log("new_nfts: ", new_nfts);
+          nfts.ownedNfts = nfts.ownedNfts.concat(new_nfts.ownedNfts);
+          // console.log("new length: ", nfts.ownedNfts.length);
+          if (new_nfts.pageKey) {
+            pageKey = new_nfts.pageKey;
+          }
+        }
+      }
     } else {
       console.log("fetching nfts for collection owned by address");
       const fetchURL = `${baseURL}?owner=${wallet}&contractAddresses%5B%5D=${collection}`;
       nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
+      if (nfts.totalCount > 100) {
+        var totalPages = Math.ceil(nfts.totalCount / 100);
+        var pageKey = nfts.pageKey;
+        for (var i = 0; i < totalPages - 1; i++) {
+          var thisFetchURL = `${baseURL}?owner=${wallet}&pageKey=${pageKey}&contractAddresses%5B%5D=${collection}`;
+          var new_nfts = await fetch(thisFetchURL, requestOptions).then(
+            (data) => data.json()
+          );
+          // console.log("new_nfts: ", new_nfts);
+          nfts.ownedNfts = nfts.ownedNfts.concat(new_nfts.ownedNfts);
+          // console.log("new length: ", nfts.ownedNfts.length);
+          if (new_nfts.pageKey) {
+            pageKey = new_nfts.pageKey;
+          }
+        }
+      }
     }
 
     if (nfts) {
-      console.log("nfts:", nfts);
       setNFTs(nfts.ownedNfts);
+      const indexOfLastRecord = currentPage * recordsPerPage;
+      const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+      const currentRecords = nfts.ownedNfts.slice(
+        indexOfFirstRecord,
+        indexOfLastRecord
+      );
+
+      // console.log("current records: ", currentRecords);
+      const numPages = Math.ceil(nfts.ownedNfts.length / recordsPerPage);
+      setNPages(numPages);
+      setCurrentRecords(currentRecords);
     }
   };
 
@@ -57,6 +101,15 @@ export default function Home() {
       }
     }
   };
+
+  useEffect(() => {
+    const indexOfLastRecord = currentPage * recordsPerPage;
+    const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+    console.log("first: ", indexOfFirstRecord);
+    console.log("last: ", indexOfLastRecord);
+    const currentRecords = NFTs.slice(indexOfFirstRecord, indexOfLastRecord);
+    setCurrentRecords(currentRecords);
+  }, [currentPage]);
 
   return (
     <div className="flex flex-col items-center justify-center py-8 gap-y-3">
@@ -102,10 +155,17 @@ export default function Home() {
           Let's go!{" "}
         </button>
       </div>
-
+      <div>
+        <Pagination
+          nPages={nPages}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
+      {"currentPage" + currentPage}
       <div className="flex flex-wrap gap-y-12 mt-4 w-5/6 gap-x-2 justify-center">
-        {NFTs.length &&
-          NFTs.map((nft) => {
+        {currentRecords.length &&
+          currentRecords.map((nft) => {
             return <NFTCard nft={nft}></NFTCard>;
           })}
       </div>
