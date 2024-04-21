@@ -9,6 +9,12 @@ export default function Home() {
   const [NFTs, setNFTs] = useState([]);
   const [fetchForCollection, setFetchForCollection] = useState(false);
 
+  const [data, setData] = useState([]); // Initialize 'data' state with an empty array []
+  const [loading, setLoading] = useState(true); // Initialize 'loading' state with the value 'true', indicating that data is still loading
+  // User is currently on this page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage] = useState(100);
+
   const fetchNFTs = async () => {
     let nfts;
     console.log("fetching nfts");
