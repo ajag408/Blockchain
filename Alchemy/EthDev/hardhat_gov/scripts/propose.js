@@ -18,7 +18,7 @@ async function main() {
   //(Have tried and failed 17 proposals)
   const tx = await governor.propose(
     [token.address],
-    [17],
+    [18],
     [
       token.interface.encodeFunctionData("mint", [
         owner.address,

@@ -4,7 +4,7 @@ const govAddr = "0x049CF58FF52f35194F2bBE4542426a7f165A4931";
 async function main() {
   //Proposal ID copied and hard-coded from previous step (propose.js)
   const proposalId = ethers.BigNumber.from(
-    "112971628834365023942085812478994004190187251562864606094129845688154543022676"
+    "17565764570626194834282076841594552290290221574083708542123816836522535460908"
   );
 
   const governor = await hre.ethers.getContractAt("MyGovernor", govAddr);
