@@ -1,0 +1,23 @@
+{
+  "name": "Scrim-s0vjs63buf",
+  "description": "https://v2.scrimba.com/learn-react-c0e/~051",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "nanoid": "3.1.28",
+    "react-mde": "11.5.0",
+    "react-split": "2.0.13",
+    "showdown": "1.9.1",
+    "firebase": "9.20.0",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "*"
+  }
+}
