@@ -1,0 +1,19 @@
+{
+  "name": "Scrim-s051urg",
+  "description": "https://v2.scrimba.com/advanced-react-c02h/~05d",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@faker-js/faker": "8.0.1",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "*"
+  }
+}
