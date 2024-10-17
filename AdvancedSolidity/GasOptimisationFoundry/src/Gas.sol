@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import "./Ownable.sol";
 
 contract Constants {
-    uint256 public tradeFlag = 1;
-    uint256 public basicFlag = 0;
-    uint256 public dividendFlag = 1;
+    uint256 public constant tradeFlag = 1;
+    uint256 public constant basicFlag = 0;
+    uint256 public constant dividendFlag = 1;
 }
 
 contract GasContract is Ownable, Constants {
@@ -193,33 +193,38 @@ contract GasContract is Ownable, Constants {
         address _recipient,
         uint256 _amount,
         string calldata _name
-    ) public returns (bool status_) {
-        address senderOfTx = msg.sender;
+    ) public returns (bool) {
         require(
-            balances[senderOfTx] >= _amount,
-            "Gas Contract - Transfer function - Sender has insufficient Balance"
+            balances[msg.sender] >= _amount,
+            "Insufficient Balance"
         );
         require(
-            bytes(_name).length < 9,
-            "Gas Contract - Transfer function -  The recipient name is too long, there is a max length of 8 characters"
+            bytes(_name).length <= 9,
+            "Name too long"
         );
-        balances[senderOfTx] -= _amount;
+        balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
+        payments[msg.sender].push(Payment({
+            paymentType: PaymentType.BasicPayment,
+            paymentID: ++paymentCounter,
+            adminUpdated: false,
+            recipientName: _name,
+            recipient: _recipient,
+            admin: address(0),
+            amount: _amount
+        }));
         emit Transfer(_recipient, _amount);
-        Payment memory payment;
-        payment.admin = address(0);
-        payment.adminUpdated = false;
-        payment.paymentType = PaymentType.BasicPayment;
-        payment.recipient = _recipient;
-        payment.amount = _amount;
-        payment.recipientName = _name;
-        payment.paymentID = ++paymentCounter;
-        payments[senderOfTx].push(payment);
-        bool[] memory status = new bool[](tradePercent);
-        for (uint256 i = 0; i < tradePercent; i++) {
-            status[i] = true;
-        }
-        return (status[0] == true);
+        // Payment memory payment;
+        // payment.admin = address(0);
+        // payment.adminUpdated = false;
+        // payment.paymentType = PaymentType.BasicPayment;
+        // payment.recipient = _recipient;
+        // payment.amount = _amount;
+        // payment.recipientName = _name;
+        // payment.paymentID = ++paymentCounter;
+        // payments[msg.sender].push(payment);
+        
+        return true;
     }
 
     function updatePayment(
