@@ -7,27 +7,21 @@ contract GasContract is Ownable {
     uint256 public totalSupply;
     uint256 public paymentCounter;
     mapping(address => uint256) public balances;
-    address public contractOwner;
     mapping(address => Payment[]) public payments;
     mapping(address => uint256) public whitelist;
-    address[5] public administrators;
+    uint256 private constant MAX_ADMINS = 5;
+    address[MAX_ADMINS] public administrators;
 
     enum PaymentType {
         Unknown,
-        BasicPayment,
-        Refund,
-        Dividend,
-        GroupPayment
+        BasicPayment
     }
 
     struct Payment {
-        PaymentType paymentType;
         uint256 paymentID;
-        bool adminUpdated;
-        string recipientName;
         address recipient;
-        address admin;
         uint256 amount;
+        string recipientName;
     }
 
     struct WhiteListPayment {
@@ -42,9 +36,9 @@ contract GasContract is Ownable {
     event WhiteListTransfer(address indexed);
 
     constructor(address[] memory _admins, uint256 _totalSupply) {
-        contractOwner = msg.sender;
+        _transferOwnership(msg.sender);
         totalSupply = _totalSupply;
-        balances[contractOwner] = _totalSupply;
+        balances[owner()] = _totalSupply;
 
         for (uint256 i = 0; i < 5 && i < _admins.length; i++) {
             if (_admins[i] != address(0)) {
@@ -54,7 +48,7 @@ contract GasContract is Ownable {
     }
 
     function checkForAdmin(address _user) public view returns (bool) {
-        for (uint256 i = 0; i < administrators.length; i++) {
+        for (uint256 i = 0; i < MAX_ADMINS; i++) {
             if (administrators[i] == _user) {
                 return true;
             }
@@ -73,18 +67,17 @@ contract GasContract is Ownable {
     function transfer(address _recipient, uint256 _amount, string calldata _name) public returns (bool) {
         require(balances[msg.sender] >= _amount, "Insufficient Balance");
         require(bytes(_name).length <= 8, "Name too long");
-
-        balances[msg.sender] -= _amount;
-        balances[_recipient] += _amount;
+        unchecked {
+            balances[msg.sender] -= _amount;
+            balances[_recipient] += _amount;
+            paymentCounter++;
+        }
 
         payments[msg.sender].push(Payment({
-            paymentType: PaymentType.BasicPayment,
             paymentID: ++paymentCounter,
-            adminUpdated: false,
-            recipientName: _name,
             recipient: _recipient,
-            admin: address(0),
-            amount: _amount
+            amount: _amount,
+            recipientName: _name
         }));
 
         emit Transfer(_recipient, _amount);
